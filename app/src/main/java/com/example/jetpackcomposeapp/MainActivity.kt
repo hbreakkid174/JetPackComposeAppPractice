@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -28,20 +29,29 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.example.jetpackcomposeapp.ui.theme.JetPackComposeAppTheme
 import com.example.mylibrary.saveEncryptedPrefValue
+import com.example.mylibrary.toastShort
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private const val TAG = "MainActivity"
@@ -71,8 +81,7 @@ class MainActivity : ComponentActivity() {
                         ImageTextRow(
                             textOne = "Android", textTwo = "JetpackCompose", context = context
                         )
-                    }*/
-                    /*    LazyColumn {
+                    }*//*    LazyColumn {
                             items(getListOfText().size) { i ->
 
                                 RoundImageText(
@@ -83,6 +92,16 @@ class MainActivity : ComponentActivity() {
                         }*/
 //                    LaunchEffectTest()
 //                    RememberCoroutineScopeTest()
+                    /* RememberUpdateStateTest {
+                         Log.d(TAG, "onCreate: RememberUpdateStateTest")
+                     }*/
+//                    val context= LocalContext
+              /*      DisposeEffectTest(onStart = {
+                        toastShort("on Start")
+
+                    }, onStop = {
+                        toastShort("on Stop")
+                    })*/
                 }
             }
         }
@@ -189,6 +208,45 @@ class MainActivity : ComponentActivity() {
           )
       }*/
 
+}
+@Composable
+fun DisposeEffectTest(
+    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
+    onStart: () -> Unit,
+    onStop: () -> Unit
+) {
+    val currentOnStart by rememberUpdatedState(newValue = onStart)
+    val currentOnStop by rememberUpdatedState(newValue = onStop)
+    DisposableEffect(key1 = lifeCycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                currentOnStart()
+            } else if (event == Lifecycle.Event.ON_STOP) {
+                currentOnStop()
+            }
+
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+}
+
+@Composable
+fun RememberUpdateStateTest(timeOutValue: () -> Unit) {
+    val currentTimeOut by rememberUpdatedState(newValue = timeOutValue)
+    LaunchedEffect(key1 = true) {
+        delay(1000L)
+        currentTimeOut()
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 10.dp)
+    ) {
+        Text(text = "trying Our Best")
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
