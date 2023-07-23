@@ -103,7 +103,8 @@ class MainActivity : ComponentActivity() {
                         toastShort("on Stop")
                     })*/
 //                    ParcelTestComp()
-                    MapSaverTestComp()
+//                    MapSaverTestComp()
+                    ListSaverTestComp()
                 }
             }
         }

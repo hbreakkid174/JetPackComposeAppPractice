@@ -8,9 +8,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.parcelize.Parcelize
@@ -19,6 +19,8 @@ import kotlinx.parcelize.Parcelize
 data class ParcelTest(val name: String, val subName: String) : Parcelable
 
 data class MapSaverTest(val mapName: String, val mapValue: String)
+
+data class ListSaverTest(val name: String)
 
 @Composable
 fun ParcelTestComp(modifier: Modifier = Modifier) {
@@ -62,6 +64,26 @@ fun MapSaverTestComp(modifier: Modifier = Modifier) {
             val mapSaverNew =
                 MapSaverTest(mapName = "mapping value new", mapValue = "mapping to new")
             mapRemember.value = mapSaverNew
+        }) {
+            Text(text = "CLick")
+        }
+    }
+}
+
+val ListSaver = listSaver<ListSaverTest, Any>(save = { listOf(it.name) },
+    restore = { ListSaverTest(it[0] as String) })
+
+@Composable
+fun ListSaverTestComp(modifier: Modifier = Modifier) {
+    val listRemember = rememberSaveable(stateSaver = ListSaver) {
+        mutableStateOf(ListSaverTest(name = "ListNaming"))
+    }
+    Column {
+        Text(text = "Map Name: ${listRemember.value.name}")
+        Spacer(modifier = modifier.padding(all = 15.dp))
+        Button(onClick = {
+            val listSaverNew = ListSaverTest(name = "New List Naming")
+            listRemember.value = listSaverNew
         }) {
             Text(text = "CLick")
         }
