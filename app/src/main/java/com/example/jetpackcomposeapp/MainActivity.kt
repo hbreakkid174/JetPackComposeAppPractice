@@ -102,6 +102,8 @@ class MainActivity : ComponentActivity() {
                     }, onStop = {
                         toastShort("on Stop")
                     })*/
+//                    ParcelTestComp()
+                    MapSaverTestComp()
                 }
             }
         }
@@ -209,6 +211,8 @@ class MainActivity : ComponentActivity() {
       }*/
 
 }
+
+
 @Composable
 fun DisposeEffectTest(
     lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current,
